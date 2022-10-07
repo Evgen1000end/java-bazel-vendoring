@@ -20,7 +20,7 @@ class InputProcessorTest {
     @Test
     void variousVersionsTest() throws IOException, ParseException {
         perform(new String[]{"--dir", PATH, "--dep", "commons-cli:commons-cli:1.5.0,commons-cli:commons-cli:1.3.1,org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven-archive:3.1.4"});
-        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli_commons-cli")));
+        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli").resolve("commons-cli")));
     }
 
     private void perform(String[] args) throws IOException, ParseException {
@@ -31,22 +31,20 @@ class InputProcessorTest {
     @Test
     void loadFromFileTest() throws IOException, ParseException {
         perform(new String[]{"--dir", PATH, "--file", "src\\test\\resources\\input.json"});
-        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli_commons-cli")));
+        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli").resolve("commons-cli")));
     }
 
     @Test
     void sameArtifactTest() throws IOException, ParseException {
         perform(new String[]{"--dir", PATH, "--dep", "commons-cli:commons-cli:1.5.0,commons-cli:commons-cli:1.5.0"});
-        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli_commons-cli")));
+        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli").resolve("commons-cli")));
     }
 
     @Test
-    void incorrectParamsTest() throws IOException, ParseException {
+    void incorrectParamsTest() throws IOException {
         setup();
         String[] args = new String[]{"--dir", PATH};
-        VendoringException vendoringException = assertThrows(VendoringException.class, () -> {
-            invoke(args);
-        });
+        VendoringException vendoringException = assertThrows(VendoringException.class, () -> invoke(args));
         assertEquals("Specify at least one dependency as an argument", vendoringException.getMessage());
         assertTrue(isEmpty(Path.of(PATH)));
     }
@@ -55,9 +53,7 @@ class InputProcessorTest {
     void noFolderTest() throws IOException {
         setup();
         String[] args = new String[]{};
-        VendoringException vendoringException = assertThrows(VendoringException.class, () -> {
-            invoke(args);
-        });
+        VendoringException vendoringException = assertThrows(VendoringException.class, () -> invoke(args));
         assertEquals("Specify a folder to download dependencies as a launch parameter", vendoringException.getMessage());
     }
 
@@ -65,7 +61,7 @@ class InputProcessorTest {
     void mainMethodTest() throws IOException {
         setup();
         Main.main(new String[]{"--dir", PATH, "--dep", "commons-cli:commons-cli:1.5.0,commons-cli:commons-cli:1.5.0"});
-        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli_commons-cli")));
+        assertTrue(Files.exists(Path.of(PATH).resolve("commons-cli").resolve("commons-cli")));
     }
 
     @Test

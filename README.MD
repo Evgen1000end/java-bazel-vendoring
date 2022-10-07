@@ -2,15 +2,11 @@
 
 Maven 3.6.3 или выше Java 17
 
-
 Сборка:
 
 _mvn clean jacoco:prepare-agent install jacoco:report_
 
-
 mvn clean verify sonar:sonar -Dsonar.login=sqp_dcea8a7dd3cfaf8041bc395df0d84011f4f1bc11
-
-
 
 Что делает утилита:
 

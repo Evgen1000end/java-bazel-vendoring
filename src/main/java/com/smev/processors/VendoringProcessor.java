@@ -25,8 +25,7 @@ import java.util.List;
 public class VendoringProcessor {
     private static final Logger log = LoggerFactory.getLogger(VendoringProcessor.class);
     private static final String[] requiredTypes = new String[]{"jar"};
-    private static final String TEMPLATE_LINK = "//third_party/jvm/{0}_{1}:{2}";
-    private static final String PATTERN_FOLDER_NAME = "{0}_{1}";
+    private static final String PATTERN_DEP_LINK = "//third_party/jvm/{0}/{1}:{2}";
     private static final String BAZEL_BUILD_FILENAME = "BUILD";
 
     private static MavenResolvedArtifact[] prepareAsMavenArtifact(String requiredType, Dep dep) {
@@ -50,9 +49,9 @@ public class VendoringProcessor {
 
     private void prepareDependency(String rootDirectory, MavenResolvedArtifact mavenArtifact) throws IOException {
         // 0. Находим директорию в которой теоретически уже лежит артефакт как той же, так и другой версии
-        final String folderName = MessageFormat.format(PATTERN_FOLDER_NAME, mavenArtifact.getCoordinate().getGroupId(), mavenArtifact.getCoordinate().getArtifactId());
-        final Path directoryPath = Paths.get(rootDirectory).resolve(folderName);
-        final Path directory = createDirectory(directoryPath);
+        final Path directoryPath = Paths.get(rootDirectory).resolve(mavenArtifact.getCoordinate().getGroupId());
+        final Path subDirectoryPath = directoryPath.resolve(mavenArtifact.getCoordinate().getArtifactId());
+        final Path directory = createDirectory(directoryPath, subDirectoryPath);
         // Исходный путь к файлу (в репозитории .m2)
         final Path source = mavenArtifact.asFile().toPath();
         // Путь для копирования
@@ -71,7 +70,7 @@ public class VendoringProcessor {
 
             for (MavenArtifactInfo dependency : mavenArtifact.getDependencies()) {
                 MavenCoordinate coordinate = dependency.getCoordinate();
-                final String depLink = MessageFormat.format(TEMPLATE_LINK, coordinate.getGroupId(), coordinate.getArtifactId(), coordinate.getVersion());
+                final String depLink = MessageFormat.format(PATTERN_DEP_LINK, coordinate.getGroupId(), coordinate.getArtifactId(), coordinate.getVersion());
                 importDeps.add(depLink);
             }
 
@@ -95,7 +94,10 @@ public class VendoringProcessor {
         }
     }
 
-    private Path createDirectory(Path directoryPath) throws IOException {
-        return !Files.exists(directoryPath) ? Files.createDirectory(directoryPath) : directoryPath;
+    private Path createDirectory(Path directoryPath, Path subDirectoryPath) throws IOException {
+        if (!Files.exists(directoryPath)) {
+            Files.createDirectory(directoryPath);
+        }
+        return !Files.exists(subDirectoryPath) ? Files.createDirectory(subDirectoryPath) : subDirectoryPath;
     }
 }
