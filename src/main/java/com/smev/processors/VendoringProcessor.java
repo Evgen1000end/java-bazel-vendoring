@@ -25,7 +25,7 @@ import java.util.List;
 public class VendoringProcessor {
     private static final Logger log = LoggerFactory.getLogger(VendoringProcessor.class);
     private static final String[] requiredTypes = new String[]{"jar"};
-    private static final String TEMPLATE_LINK = "//third_party/jvm/{0}_{1}:{2}";
+    private static final String TEMPLATE_LINK = "//third_party/jvm/{0}:{1}:{2}";
     private static final String PATTERN_FOLDER_NAME = "{0}_{1}";
     private static final String BAZEL_BUILD_FILENAME = "BUILD";
 
